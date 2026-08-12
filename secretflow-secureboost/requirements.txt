@@ -1,0 +1,9 @@
+# 本文件只固定本项目已验证的 SecureBoost 最小运行依赖，不代表 SecretFlow 全量组件环境。
+secretflow==1.13.0b0
+ray==2.42.0
+secretflow-rayfed==0.2.1a2
+interconnection==0.2.0.dev0
+numpy==1.26.4
+pandas==1.5.3
+scikit-learn==1.5.2
+pytest==9.1.1

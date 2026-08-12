@@ -1,2 +1,14 @@
-# internship-projects
-Internship project portfolio: vertical federated SecureBoost and Python web IDE
+# 实习项目集合
+
+本仓库用于集中归档我的实习阶段完成的两个相互独立的工程项目，便于代码查阅、复现与后续迭代。
+
+## 项目目录
+
+- `secretflow-secureboost/`：基于 SecretFlow 的纵向联邦 SecureBoost 原型，包含角色与数据划分、隐私计算配置、训练流程、测试用例及实验文档。
+- `python-web-ide/`：面向 Python 代码编写与理解的网页 IDE，采用 React、Vite、Monaco Editor 与 Pyright LSP；该 MVP 聚焦代码编辑、诊断、补全与悬停说明，不提供代码运行或终端能力。
+
+## 仓库组织
+
+两个项目保持独立目录和各自的依赖说明。提交时不纳入可再生成的依赖、构建产物、日志、缓存或本地凭据；安装依赖后可按各子项目 README 中的说明复现开发环境。
+
+原有的纵向联邦学习仓库和分支不作改写；此仓库作为“实习项目”总入口，保留两项工作的完整可版本控制源码、配置、测试和文档。

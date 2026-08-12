@@ -1,0 +1,22 @@
+{
+  "federated_secureboost": {
+    "metrics": {
+      "auc": 0.9909060846560847,
+      "accuracy": 0.956140350877193,
+      "log_loss": 0.20729009875151228,
+      "sample_count": 114
+    },
+    "training_seconds": 5.175527031002275
+  },
+  "centralized_reference": {
+    "metrics": {
+      "auc": 0.9907407407407407,
+      "accuracy": 0.956140350877193,
+      "log_loss": 0.1319163621527745,
+      "sample_count": 114
+    },
+    "training_seconds": 0.24298440399797983
+  },
+  "auc_difference": 0.00016534391534395176,
+  "notice": "集中式模型仅用于效果参考，不属于联邦训练实现。"
+}

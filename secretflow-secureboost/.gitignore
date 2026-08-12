@@ -1,0 +1,25 @@
+# Python 解释器生成的缓存与测试缓存。
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 本地虚拟环境、环境变量文件与打包产物。
+.venv/
+venv/
+env/
+.env
+.env.*
+build/
+dist/
+*.egg-info/
+
+# 编辑器的本机工作区状态；保留可移植的项目级 settings.json。
+.vscode/*
+!.vscode/settings.json
+
+# 每次训练都会重新生成的运行产物。
+# 指标和配置快照会保留在版本控制中，作为可复现实验的证据。
+outputs/logs/
+outputs/models/

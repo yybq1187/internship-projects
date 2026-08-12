@@ -1,0 +1,13 @@
+{
+  "name": "python-ide-lsp-gateway",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Python IDE 容器内 LSP Gateway 的运行时依赖。",
+  "scripts": {
+    "test:protocol": "node ./lspProtocolRegression.mjs"
+  },
+  "dependencies": {
+    "ws": "8.21.2"
+  }
+}
