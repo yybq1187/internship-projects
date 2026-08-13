@@ -1,0 +1,436 @@
+/**
+ * 本文件同时负责全局基础样式和 Python IDE 页面样式。
+ *
+ * 当前项目只有一个页面，因此不再单独维护 index.css，
+ * 以减少文件数量并降低初学阶段在多个样式文件之间切换的成本。
+ */
+
+/**
+ * 统一盒模型。
+ *
+ * 后续 Monaco 编辑器需要精确计算容器宽高。
+ * 使用 border-box 可以避免边框和内边距导致实际尺寸超出预期。
+ */
+* {
+  box-sizing: border-box;
+}
+
+/**
+ * 设置整个页面的基础字体、文字颜色和背景色。
+ *
+ * 优先使用 Windows 常见中文字体；如果用户系统没有该字体，
+ * 浏览器会依次使用 Segoe UI 和系统默认无衬线字体。
+ */
+:root {
+  font-family: 'Microsoft YaHei UI', 'Segoe UI', sans-serif;
+  color: #1f2937;
+  background: #f3f4f6;
+}
+
+/**
+ * 去除浏览器默认外边距，并保证 React 根节点至少占满整个视口高度。
+ *
+ * 这是后续让编辑器区域自动填满剩余页面空间的基础。
+ */
+body,
+#root {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/**
+ * IDE 最外层页面容器。
+ *
+ * 使用纵向 Flex 布局：
+ * - 顶部工具栏保持内容自身高度；
+ * - 下方编辑器区域通过 flex: 1 占据剩余可用空间。
+ */
+.ide-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/**
+ * 顶部工具栏。
+ *
+ * 左侧显示编辑器标题，右侧显示当前语言。
+ * justify-content: space-between 使两部分自动分布到左右两端。
+ */
+.ide-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 24px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px 12px 0 0;
+}
+
+/** 标题区可在行内收缩；窄屏断行后会独占完整一行。 */
+.ide-toolbar__heading {
+  min-width: 0;
+  flex: 1 1 220px;
+}
+
+/**
+ * 工具栏上方的小型说明文字。
+ *
+ * 该文字用于说明这是网页内嵌 IDE 项目，不承担交互功能。
+ */
+.ide-toolbar__eyebrow {
+  margin: 0 0 6px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+/**
+ * IDE 主标题。
+ *
+ * 通过较大的字号突出当前页面是 Python 代码编辑器。
+ */
+.ide-toolbar__title {
+  margin: 0;
+  color: #111827;
+  font-size: 24px;
+}
+
+/**
+ * 工具栏右侧操作区将连接状态、主动检查命令和语言标识保持在同一行。
+ * 小屏幕下允许自然换行，避免状态文字或按钮挤压标题区域。
+ */
+.ide-toolbar__actions {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 620px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/**
+ * LSP 状态只反映连接结果，不展示端口、容器路径或错误正文。
+ * 固定最小高度避免状态文字切换时工具栏发生纵向跳动。
+ */
+.lsp-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 5px 9px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #f8fafc;
+}
+
+/** 已连接状态使用绿色文字，明确表示智能提示来自真实 Pyright 会话。 */
+.lsp-status--ready {
+  color: #166534;
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+/** 正在建立或初始化连接时使用蓝色，避免误解为编辑器错误。 */
+.lsp-status--connecting,
+.lsp-status--initializing {
+  color: #1d4ed8;
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+/** 连接失败时保持克制的琥珀色提示；代码仍可编辑，但不会提供伪造的本地候选。 */
+.lsp-status--failed {
+  color: #92400e;
+  border-color: #fcd34d;
+  background: #fffbeb;
+}
+
+/**
+ * 格式化状态与连接状态分开显示：连接仍可用时，用户也能区分“正在格式化”“已完成”或“格式失败”。
+ * 文案只说明结果，不回显 Gateway、Ruff stderr 或用户源码，避免状态栏成为信息泄露渠道。
+ */
+.format-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 5px 9px;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #93c5fd;
+  border-radius: 6px;
+  background: #eff6ff;
+}
+
+/** 已格式化或本来无需改动时使用绿色，表示当前编辑器内容仍由用户可撤销地控制。 */
+.format-status--applied,
+.format-status--unchanged {
+  color: #166534;
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+/** 格式化失败或大文件保护触发时使用琥珀色；编辑器和现有代码始终保持可用。 */
+.format-status--failed,
+.format-status--tooLarge {
+  color: #92400e;
+  border-color: #fcd34d;
+  background: #fffbeb;
+}
+
+/**
+ * 主动检查是明确命令，因此使用普通文本按钮而非图标猜测。
+ * 稳定高度和清晰 focus-visible 样式保证鼠标与键盘操作都可辨识。
+ */
+.check-code-button {
+  min-height: 32px;
+  padding: 5px 10px;
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #2563eb;
+  border: 1px solid #1d4ed8;
+  border-radius: 6px;
+}
+
+.check-code-button:hover {
+  background: #1d4ed8;
+}
+
+.check-code-button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+/**
+ * 显式格式化按钮与检查按钮保持相同的尺寸和键盘可达性。
+ * Shift + Alt + F 是相同 Monaco action 的快捷键，按钮用于避免浏览器或输入法拦截组合键时不可发现。
+ */
+.format-code-button {
+  min-height: 32px;
+  padding: 5px 10px;
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #0f766e;
+  border: 1px solid #0f766e;
+  border-radius: 6px;
+}
+
+.format-code-button:hover:not(:disabled) {
+  background: #115e59;
+}
+
+.format-code-button:focus-visible {
+  outline: 3px solid #99f6e4;
+  outline-offset: 2px;
+}
+
+/** Ruff 请求在途期间禁用重复触发；用户仍可继续编辑，编辑会取消旧格式化请求。 */
+.format-code-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+/** 两个色块只管理语义高亮颜色；它们不会改变 Monaco 的主题、诊断或编辑器内容。 */
+.highlight-color-controls {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.highlight-color-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.highlight-color-control input[type='color'] {
+  width: 26px;
+  height: 26px;
+  padding: 2px;
+  cursor: pointer;
+  background: #ffffff;
+  border: 1px solid #94a3b8;
+  border-radius: 4px;
+}
+
+.highlight-color-control input[type='color']:focus-visible,
+.reset-highlight-colors-button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.reset-highlight-colors-button {
+  min-height: 28px;
+  padding: 4px 7px;
+  color: #475569;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+}
+
+.reset-highlight-colors-button:hover:not(:disabled) {
+  color: #1e3a8a;
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.reset-highlight-colors-button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+/**
+ * Pyright 的 DocumentSymbol 只为确认过的声明名称提供范围；通过 Monaco decoration
+ * 区分类，以及采用同一亮黄色强调的普通函数和类方法。颜色覆盖范围严格限制在名称本身，原有关键字、注释、字符串和
+ * 诊断样式不受影响。服务不可用或响应过期时这些装饰会被移除并退回 Monaco 默认语法着色。
+ */
+.editor-container .monaco-editor .python-symbol--class {
+  color: var(--python-class-highlight-color, #0f766e) !important;
+  font-weight: 700;
+}
+
+.editor-container .monaco-editor .python-symbol--function,
+.editor-container .monaco-editor .python-symbol--method {
+  /* 只使用亮黄色字体；不添加背景，避免干扰代码行的原有语法与诊断视觉层级。 */
+  color: var(--python-callable-highlight-color, #ca8a04) !important;
+  font-weight: 700;
+}
+
+/** 当前文档已确认的函数/方法调用与 Python 内置 `print(...)` 均沿用函数的亮黄色强调。 */
+.editor-container .monaco-editor .python-callable--function {
+  color: var(--python-callable-highlight-color, #ca8a04) !important;
+  font-weight: 700;
+}
+
+/**
+ * Python 语言标签。
+ *
+ * 当前项目不支持语言切换，因此该标签仅用于展示当前编辑语言。
+ * 后续如增加语言选择功能，可以将此元素替换为下拉选择框。
+ */
+.language-badge {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  color: #1d4ed8;
+  font-size: 14px;
+  font-weight: 600;
+  background: #dbeafe;
+  border-radius: 999px;
+}
+
+/**
+ * 编辑器主体面板。
+ *
+ * flex: 1 让该区域自动占据工具栏下方的剩余高度。
+ * min-height 防止窗口较小时编辑区域被压缩得过小。
+ */
+.editor-panel {
+  display: flex;
+  flex: 1;
+  min-height: 480px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+}
+
+/**
+ * Monaco Editor 的实际挂载容器。
+ *
+ * flex: 1 让容器填满 editor-panel 的剩余空间；
+ * min-width: 0 可以避免 Flex 布局下较长代码导致容器横向溢出；
+ * min-height: 480px 保证 Monaco 初始化时能够获得明确高度。
+ *
+ * 本步骤不再使用占位文字，因此不需要 display: flex、
+ * align-items 或 justify-content 等居中布局规则。
+ */
+.editor-container {
+  flex: 1;
+  min-width: 0;
+  min-height: 480px;
+  background: #ffffff;
+}
+
+/**
+ * Monaco 在 Provider 返回空数组或仍在加载异步候选时，会将 SuggestWidget 置为 message 状态，
+ * 默认渲染英文 “No suggestions.” 或 “Loading...”。本 IDE 的自动补全不把空结果当作需要
+ * 用户处理的反馈，因此隐藏该短暂状态；App.tsx 会在 125ms 后彻底关闭空控件。有效候选抵达时
+ * Monaco 会移除 message 类，正常的补全列表不会受到影响。
+ */
+.editor-container .monaco-editor .suggest-widget.message {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/**
+ * 中等宽度下，若标题与所有操作继续共用一行，会挤压标题并使末尾按钮溢出。
+ * 改为上下两行后，操作区拥有完整宽度，内部既能自然换行，也不会裁切语言标签。
+ */
+@media (max-width: 1080px) {
+  .ide-toolbar {
+    align-items: flex-start;
+  }
+
+  .ide-toolbar__heading,
+  .ide-toolbar__actions {
+    flex-basis: 100%;
+  }
+
+  .ide-toolbar__actions {
+    justify-content: flex-start;
+  }
+}
+
+/**
+ * 小屏幕适配。
+ *
+ * 在较窄窗口中缩小外层间距和工具栏内边距，
+ * 使编辑器仍然尽可能占据主要可视区域。
+ */
+@media (max-width: 640px) {
+  .ide-page {
+    padding: 12px;
+  }
+
+  .ide-toolbar {
+    padding: 16px;
+  }
+
+  .ide-toolbar__actions {
+    justify-content: flex-start;
+  }
+
+  .ide-toolbar__title {
+    font-size: 20px;
+  }
+
+  .editor-panel,
+  .editor-container {
+    min-height: 400px;
+  }
+}

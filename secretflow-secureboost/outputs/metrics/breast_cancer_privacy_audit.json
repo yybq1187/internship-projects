@@ -1,0 +1,10 @@
+{
+  "alice_holds_labels": true,
+  "bob_has_no_label_partition": true,
+  "features_are_vertically_partitioned": true,
+  "heu_secret_key_keeper_is_alice": true,
+  "heu_evaluator_is_bob": true,
+  "disallowed_reveal_calls": [],
+  "limitation": "本报告只验证应用层角色、数据分区和 reveal 调用边界；它不是对 SecureBoost 的形式化安全证明，也不代表该单机仿真可直接用于生产。",
+  "passed": true
+}

@@ -1,0 +1,8 @@
+{
+  "include": ["examples/lsp-workspace"],
+  "exclude": ["**/__pycache__", "node_modules", "dist"],
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "basic",
+  "venvPath": "/opt",
+  "venv": "venv"
+}

@@ -1,0 +1,8 @@
+{
+  // 打开本项目时建议安装的扩展；当前项目使用命令行 oxlint，不依赖 ESLint 配置。
+  "recommendations": [
+    "esbenp.prettier-vscode"
+  ],
+  // Code Runner 容易绕过项目脚本和统一配置，因此不建议在本项目中使用。
+  "unwantedRecommendations": ["formulahendry.code-runner"]
+}

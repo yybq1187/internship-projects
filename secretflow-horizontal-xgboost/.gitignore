@@ -1,0 +1,25 @@
+# Python 与测试缓存。
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 本地环境与敏感配置。
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# 编辑器本机状态，仅保留可移植的项目级配置。
+.vscode/*
+!.vscode/settings.json
+
+# 构建产物和每次运行可重新生成的文件。
+build/
+dist/
+*.egg-info/
+outputs/logs/
+outputs/models/
+

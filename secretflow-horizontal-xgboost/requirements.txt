@@ -1,0 +1,7 @@
+# 本项目在 Python 3.10.20 / WSL2 Ubuntu 中验证的直接依赖。
+# Ray 和 secretflow-rayfed 由 SecretFlow 自身的依赖关系安装，无需在此重复固定。
+secretflow==1.13.0b0
+numpy==1.26.4
+scikit-learn==1.5.2
+xgboost==3.2.0
+pytest==9.1.1

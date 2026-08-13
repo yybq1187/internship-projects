@@ -1,0 +1,9 @@
+# 浏览器依赖、构建产物和 Git 元数据不参与 LSP 镜像构建。
+# Dockerfile 仅复制 Gateway 运行所需的 server 文件，避免无关文件扩大构建上下文。
+node_modules
+dist
+.git
+.vscode
+__pycache__/
+*.py[cod]
+npm-debug.log*

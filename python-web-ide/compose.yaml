@@ -1,0 +1,46 @@
+# 本地 Python LSP 分析环境。宿主机仅映射回环地址，局域网无法直接访问服务。
+services:
+  python-ide-lsp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: python-ide-lsp:pyright-1.1.411-numpy-2.2.6
+    profiles:
+      - lsp
+    ports:
+      - '127.0.0.1:3001:3001'
+    environment:
+      # 运行时策略由 Compose 统一提供；浏览器无法通过 WebSocket 改写这些边界。
+      LSP_PORT: '3001'
+      LSP_PATH: /pyright
+      # 仅放行本机 Vite 开发端口；5174、5175 用于 5173 被已有本地服务占用时的受控备用端口。
+      LSP_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:5175,http://127.0.0.1:5175
+      LSP_MAX_SESSIONS: '4'
+      LSP_MAX_MESSAGE_BYTES: '1048576'
+      LSP_MAX_IDLE_MS: '300000'
+      # Gateway 对固定 Ruff 子进程的单次格式化超时，浏览器不能通过请求覆盖该限制。
+      LSP_FORMAT_TIMEOUT_MS: '5000'
+    volumes:
+      # 仅将专用演示工作区交给 Pyright，容器不能改写宿主机示例源代码。
+      - type: bind
+        source: ./examples/lsp-workspace
+        target: /workspace/examples/lsp-workspace
+        read_only: true
+      # 配置单独只读挂载，确保容器内外使用同一份分析规则。
+      - type: bind
+        source: ./pyrightconfig.json
+        target: /workspace/pyrightconfig.json
+        read_only: true
+    working_dir: /workspace
+    user: '10001:10001'
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 128
+    mem_limit: 768m
+    cpus: 1.0
+    init: true

@@ -1,0 +1,17 @@
+# Do not version dependencies, build artefacts, editor state, or local secrets.
+**/.git/
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/coverage/
+**/__pycache__/
+**/*.py[cod]
+**/*.log
+**/.env
+**/.env.*
+!**/.env.example
+**/*.pem
+**/*.key
+**/.vscode/*
+!**/.vscode/extensions.json
+.DS_Store
