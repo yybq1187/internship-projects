@@ -1,4 +1,4 @@
-"""?????????????????????"""
+"""验证二分类目标函数、叶权重和增益数学核心。"""
 
 from __future__ import annotations
 
@@ -53,7 +53,7 @@ def test_leaf_weight_and_split_gain_match_hand_calculation() -> None:
 
 
 def test_objective_rejects_illegal_labels_and_parameters() -> None:
-    with pytest.raises(ValueError, match="??"):
+    with pytest.raises(ValueError, match="标签"):
         binary_logistic_grad_hess([0.0, 0.0], [0.0, 2.0])
     with pytest.raises(ValueError, match="reg_lambda"):
         leaf_weight(1.0, 1.0, -1.0)

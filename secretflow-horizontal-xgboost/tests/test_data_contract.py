@@ -1,4 +1,4 @@
-"""????????????????????"""
+"""验证水平数据同构、样本所有权和泄漏防护。"""
 
 from __future__ import annotations
 
@@ -41,9 +41,9 @@ def test_toy_and_breast_cancer_partitions_are_disjoint_and_isomorphic() -> None:
 def test_partition_rejects_nonfinite_features_duplicate_ids_and_bad_labels() -> None:
     with pytest.raises(ValueError, match="NaN"):
         HorizontalPartition.create(["a", "b"], [[1.0], [np.nan]], [0, 1], ["x"])
-    with pytest.raises(ValueError, match="??"):
+    with pytest.raises(ValueError, match="重复"):
         HorizontalPartition.create(["a", "a"], [[1.0], [2.0]], [0, 1], ["x"])
-    with pytest.raises(ValueError, match="0 ? 1"):
+    with pytest.raises(ValueError, match="0 和 1"):
         HorizontalPartition.create(["a", "b"], [[1.0], [2.0]], [0, 2], ["x"])
 
 
@@ -54,14 +54,14 @@ def test_dataset_rejects_cross_party_overlap_and_schema_mismatch() -> None:
     overlapping = HorizontalPartition.create(
         ["at_0", "be_1"], [[0.0], [1.0]], [0, 1], ["x"]
     )
-    with pytest.raises(ValueError, match="??"):
+    with pytest.raises(ValueError, match="重叠"):
         HorizontalDataset(alice_train, bob_train, alice_test, overlapping)
     wrong_schema = _partition("be", names=("different",))
-    with pytest.raises(ValueError, match="????"):
+    with pytest.raises(ValueError, match="特征列名"):
         HorizontalDataset(alice_train, bob_train, alice_test, wrong_schema)
 
 
 def test_dataset_rejects_single_class_training_client() -> None:
     single_class = _partition("at", labels=(0.0, 0.0))
-    with pytest.raises(ValueError, match="????"):
+    with pytest.raises(ValueError, match="两个类别"):
         HorizontalDataset(single_class, _partition("bt"), _partition("ae"), _partition("be"))

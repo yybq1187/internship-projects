@@ -1,4 +1,4 @@
-"""???? Alice/Bob PYU ????????????"""
+"""实现仅在 Alice/Bob PYU 内执行的客户端本地计算。"""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from horizontal_xgb.objective import (
 
 @dataclass
 class ClientState:
-    """???????? PYU ??????? Charlie ???????"""
+    """保存在单个客户端 PYU 内、不会发送给 Charlie 的逐样本状态。"""
 
     features: NDArray[np.float64]
     labels: NDArray[np.float64]
@@ -30,7 +30,7 @@ class ClientState:
 
 
 def compute_local_extrema(features: ArrayLike) -> NDArray[np.float64]:
-    """??????????? Charlie ?????? min/max?"""
+    """在客户端本地计算允许向 Charlie 披露的逐特征 min/max。"""
     return local_feature_extrema(features)
 
 
@@ -41,11 +41,11 @@ def initialize_client_state(
     feature_names: Sequence[str],
     base_score_raw: float,
 ) -> ClientState:
-    """????????????????????????"""
+    """在客户端本地分桶，并初始化逐样本预测和节点归属。"""
     values = np.asarray(features, dtype=np.float64)
     y = np.asarray(labels, dtype=np.float64)
     if values.ndim != 2 or y.shape != (values.shape[0],):
-        raise ValueError("??????????????")
+        raise ValueError("客户端特征和标签形状不一致。")
     model = BinningModel.from_dict(dict(binning_payload))
     binned = transform_with_binning(values, model, feature_names)
     raw_score = np.full(values.shape[0], float(base_score_raw), dtype=np.float64)
@@ -62,7 +62,7 @@ def initialize_client_state(
 
 
 def start_boosting_round(state: ClientState) -> ClientState:
-    """???? raw_score ?????? g/h?????????????"""
+    """根据当前 raw_score 重新计算本轮 g/h，并把所有样本放回根节点。"""
     gradients, hessians = binary_logistic_grad_hess(state.raw_score, state.labels)
     state.gradients = gradients
     state.hessians = hessians
@@ -75,7 +75,7 @@ def build_local_histogram(
     node_ids: Sequence[int],
     max_bin: int,
 ) -> NDArray[np.float64]:
-    """????????? count/G/H ????"""
+    """构造固定形状的本地 count/G/H 直方图。"""
     return build_histogram(
         state.binned_features,
         state.gradients,
@@ -90,7 +90,7 @@ def apply_public_splits(
     state: ClientState,
     split_payloads: Sequence[Mapping[str, Any]],
 ) -> ClientState:
-    """?? Charlie ???????????????????"""
+    """根据 Charlie 公布的分裂结果在本地更新样本节点归属。"""
     original_assignments = state.node_assignments.copy()
     updated_assignments = state.node_assignments.copy()
     for payload in split_payloads:
@@ -113,7 +113,7 @@ def build_local_leaf_statistics(
     state: ClientState,
     leaf_ids: Sequence[int],
 ) -> NDArray[np.float64]:
-    """??????????? count/G/H?"""
+    """按公开叶子编号累加本地 count/G/H。"""
     return build_leaf_statistics(
         state.gradients,
         state.hessians,
@@ -128,9 +128,9 @@ def apply_leaf_weights(
     weights: Sequence[float],
     learning_rate: float,
 ) -> ClientState:
-    """???????? raw_score += learning_rate * leaf_weight?"""
+    """在客户端本地执行 raw_score += learning_rate * leaf_weight。"""
     if len(leaf_ids) != len(weights):
-        raise ValueError("?????????????")
+        raise ValueError("叶子编号和权重数量不一致。")
     increments = np.zeros(state.labels.shape[0], dtype=np.float64)
     for leaf_id, weight in zip(leaf_ids, weights):
         increments[state.node_assignments == int(leaf_id)] = float(weight)
@@ -139,13 +139,13 @@ def apply_leaf_weights(
 
 
 def local_loss_statistics(state: ClientState) -> NDArray[np.float64]:
-    """???????????????????????????"""
+    """只返回可安全求和的损失总和与样本数，不返回逐样本损失。"""
     loss = binary_logloss_from_raw_score(state.raw_score, state.labels)
     return np.asarray([loss * state.labels.size, state.labels.size], dtype=np.float64)
 
 
 def client_state_shape(state: ClientState) -> dict[str, int]:
-    """?????????????????????????"""
+    """返回不包含原始值的本地状态规模，供运行时审计记录。"""
     return {
         "sample_count": int(state.features.shape[0]),
         "feature_count": int(state.features.shape[1]),
@@ -157,8 +157,8 @@ def predict_local_model(
     feature_names: Sequence[str],
     model_payload: Mapping[str, Any],
 ) -> NDArray[np.float64]:
-    """??????????????????????"""
-    # ????????????????????????????
+    """在客户端本地加载公开模型并返回最终评估概率。"""
+    # 局部导入可以避免客户端训练状态模块与树模块形成循环依赖。
     from horizontal_xgb.tree import HorizontalXGBModel
 
     model = HorizontalXGBModel.from_dict(dict(model_payload))

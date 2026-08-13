@@ -1,4 +1,4 @@
-"""???? Charlie PYU ???????????"""
+"""实现只在 Charlie PYU 内执行的聚合统计处理。"""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ def fit_global_binning_on_server(
     feature_names: Sequence[str],
     max_bin: int,
 ) -> dict[str, Any]:
-    """? Charlie ????????????????????"""
+    """由 Charlie 合并客户端局部极值并生成共享等宽桶边界。"""
     return fit_equal_width_binning(
         [alice_extrema, bob_extrema], feature_names, int(max_bin)
     ).to_dict()
@@ -31,7 +31,7 @@ def select_level_splits_on_server(
     node_ids: Sequence[int],
     config_payload: Mapping[str, Any],
 ) -> list[dict[str, Any]]:
-    """????????????????????????????"""
+    """根据安全聚合后的直方图选择当前层分裂，不接收逐样本信息。"""
     config = TrainingConfig.from_dict(dict(config_payload))
     decisions = find_level_splits(global_histogram, node_ids, config)
     return [decision.to_dict() for decision in decisions]
@@ -42,15 +42,15 @@ def compute_leaf_weights_on_server(
     leaf_ids: Sequence[int],
     reg_lambda: float,
 ) -> list[float]:
-    """??? G/H ???????????? count ???????"""
+    """由聚合 G/H 计算最终叶子权重，并检查 count 解码接近整数。"""
     statistics = np.asarray(global_leaf_statistics, dtype=np.float64)
     if statistics.shape != (len(leaf_ids), 3):
-        raise ValueError("???????????????????")
+        raise ValueError("聚合叶子统计形状与公开叶子数量不一致。")
     if not np.all(np.isfinite(statistics)):
-        raise ValueError("????????????????")
+        raise ValueError("聚合叶子统计必须全部为有限数值。")
     counts = statistics[:, COUNT_CHANNEL]
     if not np.allclose(counts, np.rint(counts), atol=2e-5, rtol=0.0):
-        raise ValueError("?????? count ????????????")
+        raise ValueError("安全聚合后的 count 通道未能解码为近似整数。")
     return [
         leaf_weight(
             statistics[position, GRAD_CHANNEL],
@@ -62,8 +62,8 @@ def compute_leaf_weights_on_server(
 
 
 def compute_mean_loss_on_server(global_loss_statistics: ArrayLike) -> float:
-    """??????????????????? LogLoss?"""
+    """从聚合后的损失总和与样本数计算本轮平均 LogLoss。"""
     values = np.asarray(global_loss_statistics, dtype=np.float64)
     if values.shape != (2,) or not np.all(np.isfinite(values)) or values[1] <= 0.0:
-        raise ValueError("???????????? [sum_loss, count]?")
+        raise ValueError("聚合损失统计必须是有效的 [sum_loss, count]。")
     return float(values[0] / values[1])

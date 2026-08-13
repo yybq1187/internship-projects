@@ -3,7 +3,7 @@
   "federated_vs_official_auc_difference": 0.0009920634920633775,
   "federated_vs_self_written_centralized_max_abs_prediction_difference": 2.8941354535128028e-08,
   "fixed_seed_model_reproducible": true,
-  "known_warning": "JAX/Ray ??????? os.fork() ??????????",
+  "known_warning": "JAX/Ray 启动时可能出现 os.fork() 与多线程不兼容警告。",
   "model_reload_max_abs_prediction_difference": 0.0,
   "models": {
     "official_xgboost_3_2_0": {

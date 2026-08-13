@@ -1,4 +1,4 @@
-"""??????? SecretFlow ???????"""
+"""集中创建和关闭 SecretFlow 本地三方设备。"""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from configs.device_config import DeviceConfig
 
 @dataclass(frozen=True)
 class FederatedDevices:
-    """?? Alice?Bob?Charlie ??????????"""
+    """保存 Alice、Bob、Charlie 及固定点安全聚合器。"""
 
     alice: PYU
     bob: PYU
@@ -22,7 +22,7 @@ class FederatedDevices:
 
 
 def create_devices(config: DeviceConfig | None = None) -> FederatedDevices:
-    """?????????????? Charlie ???????????"""
+    """以本地仿真模式启动三方，并让 Charlie 只承担聚合与决策职责。"""
     actual = config or DeviceConfig()
     sf.init(parties=list(actual.parties), address="local")
     alice = sf.PYU(actual.alice_party)
@@ -37,5 +37,5 @@ def create_devices(config: DeviceConfig | None = None) -> FederatedDevices:
 
 
 def shutdown_devices() -> None:
-    """?? SecretFlow/Ray ?????????????????"""
+    """关闭 SecretFlow/Ray 本地运行时，避免测试之间残留进程。"""
     sf.shutdown()

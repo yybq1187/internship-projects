@@ -1,4 +1,4 @@
-"""?? Breast Cancer ?????????????"""
+"""运行 Breast Cancer 三模型对照实验和隐私审计。"""
 
 from __future__ import annotations
 
@@ -28,12 +28,12 @@ from horizontal_xgb.trainer import (
 
 
 def _file_size(path: Path) -> int:
-    """??????????????"""
+    """返回已保存模型文件的字节数。"""
     return int(path.stat().st_size)
 
 
 def main() -> None:
-    """?????????????????????????"""
+    """完成三组训练、指标对照、复现检查、审计和产物保存。"""
     logger = create_case_logger(
         "breast_cancer_horizontal_case", "breast_cancer_horizontal_case.log"
     )
@@ -43,7 +43,7 @@ def main() -> None:
     config = TrainingConfig()
     save_json(config.to_dict(), "configs/breast_cancer_training_config.json")
     logger.info(
-        "???????????=%d?????=%d????=%d",
+        "数据准备完成：训练样本=%d，测试样本=%d，特征数=%d",
         train_data.sample_count,
         test_data.sample_count,
         len(dataset.feature_names),
@@ -61,7 +61,7 @@ def main() -> None:
     central_metrics = evaluate_binary_classification(
         test_data.labels, central_probabilities
     )
-    logger.info("????????????=%s", central_result.training_losses)
+    logger.info("自写集中式训练完成：损失=%s", central_result.training_losses)
 
     devices = create_devices()
     try:
@@ -69,16 +69,16 @@ def main() -> None:
         sample_ids, labels, federated_probabilities = predict_federated_test_partitions(
             federated_result.model, dataset, devices
         )
-        # ?????????????????????????
+        # 复现训练只比较模型参数，不把第二次耗时写进主对照。
         repeated_result = train_federated_histogram_xgb(dataset, devices, config)
     finally:
         shutdown_devices()
     if not np.array_equal(sample_ids, test_data.sample_ids) or not np.array_equal(
         labels, test_data.labels
     ):
-        raise RuntimeError("??????? sample_id ????????????")
+        raise RuntimeError("联邦评估数据按 sample_id 合并后与集中参考不一致。")
     federated_metrics = evaluate_binary_classification(labels, federated_probabilities)
-    logger.info("???????????=%s", federated_result.training_losses)
+    logger.info("水平联邦训练完成：损失=%s", federated_result.training_losses)
 
     official = XGBClassifier(
         objective="binary:logistic",
@@ -167,10 +167,10 @@ def main() -> None:
         ),
         "fixed_seed_model_reproducible": fixed_seed_reproducible,
         "privacy_audit_passed": privacy_audit["passed"],
-        "known_warning": "JAX/Ray ??????? os.fork() ??????????",
+        "known_warning": "JAX/Ray 启动时可能出现 os.fork() 与多线程不兼容警告。",
     }
     save_json(comparison, "metrics/breast_cancer_comparison.json")
-    logger.info("????=%s", comparison)
+    logger.info("对照指标=%s", comparison)
     print(json.dumps(comparison, ensure_ascii=False, indent=2))
 
 

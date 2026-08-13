@@ -1,4 +1,4 @@
-"""????????????? JSON ?????"""
+"""验证树路由、最大深度和模型 JSON 严格加载。"""
 
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ def test_model_round_trip_and_feature_order_validation(tmp_path) -> None:
     save_model(model, path)
     loaded = load_model(path)
     assert np.max(np.abs(model.predict_proba(features) - loaded.predict_proba(features))) <= 1e-12
-    with pytest.raises(ValueError, match="??"):
+    with pytest.raises(ValueError, match="顺序"):
         loaded.predict_proba(features, ("wrong",))
 
 
@@ -51,19 +51,19 @@ def test_model_loader_rejects_damaged_unknown_and_missing_node_json(tmp_path) ->
     _, model = _trained_model()
     damaged = tmp_path / "damaged.json"
     damaged.write_text("{not-json", encoding="utf-8")
-    with pytest.raises(ValueError, match="????? JSON"):
+    with pytest.raises(ValueError, match="有效的模型 JSON"):
         load_model(damaged)
 
     payload = model.to_dict()
     payload["schema_version"] = "unknown"
     unknown = tmp_path / "unknown.json"
     unknown.write_text(json.dumps(payload), encoding="utf-8")
-    with pytest.raises(ValueError, match="????"):
+    with pytest.raises(ValueError, match="未知模型"):
         load_model(unknown)
 
     payload = model.to_dict()
     payload["trees"][0]["nodes"] = payload["trees"][0]["nodes"][:-1]
     missing = tmp_path / "missing.json"
     missing.write_text(json.dumps(payload), encoding="utf-8")
-    with pytest.raises(ValueError, match="???"):
+    with pytest.raises(ValueError, match="不存在"):
         load_model(missing)

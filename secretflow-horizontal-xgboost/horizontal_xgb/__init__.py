@@ -1,4 +1,4 @@
-"""?????????? XGBoost ?????"""
+"""教学型水平联邦直方图 XGBoost 公共接口。"""
 
 from horizontal_xgb.evaluator import evaluate_binary_classification, predict_proba
 from horizontal_xgb.model_io import load_model, save_model

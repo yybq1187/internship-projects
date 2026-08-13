@@ -1,4 +1,4 @@
-"""????????????????????"""
+"""实现静态源代码审计和训练消息元数据审计。"""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ ALLOWED_SERVER_PAYLOADS = {
 
 @dataclass
 class RuntimeMessageAudit:
-    """??????????????????????????"""
+    """记录语义类型、方向和形状，不记录任何逐样本实际数值。"""
 
     events: list[dict[str, Any]] = field(default_factory=list)
 
@@ -42,7 +42,7 @@ class RuntimeMessageAudit:
         receiver: str,
         shape: Iterable[int] | None = None,
     ) -> None:
-        """????????????"""
+        """记录一条脱敏消息元数据。"""
         event = {
             "message_type": str(message_type),
             "sender": str(sender),
@@ -52,27 +52,27 @@ class RuntimeMessageAudit:
         self.events.append(event)
 
     def to_report(self) -> dict[str, Any]:
-        """?? Charlie ??????????????????"""
+        """检查 Charlie 接收消息的白名单，并生成可保存报告。"""
         violations: list[str] = []
         for event in self.events:
             message_type = event["message_type"]
             if event["receiver"] != "charlie":
                 continue
             if message_type in FORBIDDEN_SERVER_PAYLOADS:
-                violations.append(f"Charlie ????????{message_type}")
+                violations.append(f"Charlie 收到了禁止消息：{message_type}")
             elif message_type not in ALLOWED_SERVER_PAYLOADS:
-                violations.append(f"Charlie ?????????{message_type}")
+                violations.append(f"Charlie 收到了未登记消息：{message_type}")
         return {
             "passed": not violations,
             "violations": violations,
             "event_count": len(self.events),
             "events": self.events,
-            "statement": "??????????????????????????",
+            "statement": "该静态与消息审计用于教学验证，不构成形式化安全证明。",
         }
 
 
 def audit_no_reveal_in_client_server(project_root: str | Path) -> dict[str, Any]:
-    """?? AST ?? client.py/server.py ???? reveal?"""
+    """使用 AST 检查 client.py/server.py 是否调用 reveal。"""
     root = Path(project_root)
     violations: list[str] = []
     checked_files: list[str] = []
@@ -87,12 +87,12 @@ def audit_no_reveal_in_client_server(project_root: str | Path) -> dict[str, Any]
                     function.id if isinstance(function, ast.Name) else ""
                 )
                 if name == "reveal":
-                    violations.append(f"{relative}:{node.lineno} ??? reveal")
+                    violations.append(f"{relative}:{node.lineno} 调用了 reveal")
     return {
         "passed": not violations,
         "checked_files": checked_files,
         "violations": violations,
-        "statement": "??????????????",
+        "statement": "静态审计不是形式化安全证明。",
     }
 
 
@@ -100,22 +100,22 @@ def combine_audit_reports(
     static_report: Mapping[str, Any],
     runtime_report: Mapping[str, Any],
 ) -> dict[str, Any]:
-    """?????????????"""
+    """合并静态与运行时审计结论。"""
     passed = bool(static_report["passed"]) and bool(runtime_report["passed"])
     return {
         "passed": passed,
         "static_audit": dict(static_report),
         "runtime_message_audit": dict(runtime_report),
         "limitations": [
-            "Charlie ???????????? min/max?",
-            "??????????????????",
-            "??????????????????????",
+            "Charlie 可见每个客户端逐特征局部 min/max。",
+            "公开树结构和最终模型参数不视为秘密。",
+            "本审计不能替代密码学协议证明或生产安全评估。",
         ],
     }
 
 
 def save_audit_report(report: Mapping[str, Any], path: str | Path) -> None:
-    """? UTF-8 JSON ???????"""
+    """以 UTF-8 JSON 保存审计报告。"""
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(

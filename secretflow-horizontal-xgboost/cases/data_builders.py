@@ -1,4 +1,4 @@
-"""???????????????"""
+"""构造两个确定性水平联邦数据集。"""
 
 from __future__ import annotations
 
@@ -13,8 +13,8 @@ TOY_FEATURE_NAMES = ("age", "income", "purchase_count", "credit_score")
 
 
 def build_toy_horizontal_dataset() -> HorizontalDataset:
-    """?? 16 ????????????????????????"""
-    # ?? 1--6/9--14 ?????7--8/15--16 ?????????????
+    """构造 16 条确定性样本，并按预设所有权划分训练集和测试集。"""
+    # 每方 1--6/9--14 用于训练，7--8/15--16 用于测试；各分区均含两类。
     rows = np.asarray(
         [
             [22, 28, 1, 530, 0],
@@ -52,7 +52,7 @@ def build_toy_horizontal_dataset() -> HorizontalDataset:
 
 
 def build_breast_cancer_horizontal_dataset(seed: int = 42) -> HorizontalDataset:
-    """????????????????? Alice ? Bob?"""
+    """按统一分层切分、再按标签分层均分给 Alice 和 Bob。"""
     source = load_breast_cancer()
     features = np.asarray(source.data, dtype=np.float64)
     labels = np.asarray(source.target, dtype=np.float64)

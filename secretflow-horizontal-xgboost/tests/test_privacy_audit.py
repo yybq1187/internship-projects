@@ -1,4 +1,4 @@
-"""???????????????"""
+"""验证静态隐私审计和消息白名单。"""
 
 from __future__ import annotations
 
@@ -23,4 +23,4 @@ def test_runtime_audit_rejects_raw_payload_to_charlie() -> None:
     audit.record("raw_features", "alice", "charlie", (10, 2))
     report = audit.to_report()
     assert not report["passed"]
-    assert "????" in report["violations"][0]
+    assert "禁止消息" in report["violations"][0]

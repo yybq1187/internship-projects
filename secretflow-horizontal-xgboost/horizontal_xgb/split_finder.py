@@ -1,4 +1,4 @@
-"""???????????????????"""
+"""使用直方图前缀和选择确定性的最优分裂。"""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from horizontal_xgb.objective import split_gain
 
 @dataclass(frozen=True)
 class SplitDecision:
-    """?????????????????????"""
+    """描述服务器针对一个节点做出的公开分裂决定。"""
 
     node_id: int
     is_leaf: bool
@@ -31,12 +31,12 @@ class SplitDecision:
     right_id: int | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        """??? PYU ? JSON ??????????"""
+        """转换为 PYU 与 JSON 均可传递的简单字典。"""
         return asdict(self)
 
     @classmethod
     def from_dict(cls, payload: dict[str, Any]) -> "SplitDecision":
-        """??????????????"""
+        """从服务器返回值恢复分裂决定。"""
         return cls(**payload)
 
 
@@ -45,12 +45,12 @@ def find_best_split(
     node_id: int,
     config: TrainingConfig,
 ) -> SplitDecision:
-    """????????????????"""
+    """为单个节点寻找最优特征和桶边界。"""
     histogram = np.asarray(node_histogram, dtype=np.float64)
     if histogram.ndim != 3 or histogram.shape[-1] != 3:
-        raise ValueError("?????????? (feature, bin, 3) ???")
+        raise ValueError("单节点直方图必须具有 (feature, bin, 3) 形状。")
     if not np.all(np.isfinite(histogram)):
-        raise ValueError("????????????????")
+        raise ValueError("单节点直方图必须全部为有限数值。")
 
     best: SplitDecision | None = None
     for feature_index in range(histogram.shape[0]):
@@ -98,7 +98,7 @@ def find_best_split(
             )
             if best is None or gain > best.gain + config.split_tolerance:
                 best = candidate
-            # ??????????????????????????????
+            # 遍历顺序已经是特征索引、桶索引升序；近似并列时保留先出现者。
     if best is None:
         return SplitDecision(node_id=int(node_id), is_leaf=True)
     return best
@@ -109,7 +109,7 @@ def find_level_splits(
     node_ids: Sequence[int],
     config: TrainingConfig,
 ) -> list[SplitDecision]:
-    """???????????????????????"""
+    """按固定节点顺序为当前层的每个节点生成分裂决定。"""
     histogram = validate_histogram(global_histogram, len(node_ids))
     return [
         find_best_split(histogram[position], int(node_id), config)

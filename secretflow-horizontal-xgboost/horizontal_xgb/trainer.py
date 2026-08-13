@@ -1,4 +1,4 @@
-"""?????????? SecretFlow ?????????"""
+"""实现集中式参考训练和 SecretFlow 水平联邦训练编排。"""
 
 from __future__ import annotations
 
@@ -49,7 +49,7 @@ from horizontal_xgb.tree import HistogramTree, HorizontalXGBModel
 
 @dataclass
 class TrainingResult:
-    """???????????????????????"""
+    """统一返回训练模型、损失、耗时和脱敏审计元数据。"""
 
     model: HorizontalXGBModel
     training_losses: list[float]
@@ -62,29 +62,29 @@ def _normalize_training_input(
     labels: ArrayLike,
     feature_names: Sequence[str] | None,
 ) -> tuple[NDArray[np.float64], NDArray[np.float64], tuple[str, ...]]:
-    """??????????????????????"""
+    """验证集中式入口的数值、形状、标签和特征名称。"""
     values = np.asarray(features, dtype=np.float64)
     y = np.asarray(labels, dtype=np.float64)
     if values.ndim != 2 or values.shape[0] == 0 or values.shape[1] == 0:
-        raise ValueError("??????????????")
+        raise ValueError("训练特征必须是非空二维数组。")
     if y.shape != (values.shape[0],):
-        raise ValueError("???????????????????")
+        raise ValueError("训练标签必须是一维数组且与样本数一致。")
     if not np.all(np.isfinite(values)):
-        raise ValueError("????????????NaN ?????")
+        raise ValueError("训练特征不能包含缺失值、NaN 或无穷值。")
     if not np.all(np.isin(y, (0.0, 1.0))) or np.unique(y).size != 2:
-        raise ValueError("???????? 0/1 ??????????")
+        raise ValueError("训练标签必须只含 0/1 且同时包含两个类别。")
     names = (
         tuple(f"feature_{index}" for index in range(values.shape[1]))
         if feature_names is None
         else tuple(str(name) for name in feature_names)
     )
     if len(names) != values.shape[1] or len(set(names)) != len(names):
-        raise ValueError("feature_names ????????????????")
+        raise ValueError("feature_names 数量必须匹配特征列数且不能重复。")
     return values, y, names
 
 
 def _level_node_ids(depth: int) -> tuple[int, ...]:
-    """?????????????????????????"""
+    """返回给定深度完整堆式编号，保证双方直方图形状恒定。"""
     return tuple(range(2**depth - 1, 2 ** (depth + 1) - 1))
 
 
@@ -93,7 +93,7 @@ def _accept_decisions(
     decisions: Sequence[SplitDecision],
     binning_model: BinningModel,
 ) -> list[SplitDecision]:
-    """??????????????????????????"""
+    """把有效公开分裂写入树，并忽略空占位节点或不可用阈值。"""
     accepted: list[SplitDecision] = []
     for decision in decisions:
         if decision.node_id not in tree.nodes or decision.is_leaf:
@@ -101,7 +101,7 @@ def _accept_decisions(
         assert decision.feature_index is not None and decision.split_bin is not None
         thresholds = binning_model.thresholds[decision.feature_index]
         if decision.split_bin >= len(thresholds):
-            # ???????????????????
+            # 常数特征或没有真实阈值时不能创建分裂。
             continue
         tree.set_split(
             node_id=decision.node_id,
@@ -120,7 +120,7 @@ def _route_assignments(
     binned_features: NDArray[np.int64],
     decisions: Sequence[SplitDecision],
 ) -> NDArray[np.int64]:
-    """??????????????????????????"""
+    """在集中式参考路径中复用与客户端相同的桶编号路由规则。"""
     original = assignments.copy()
     updated = assignments.copy()
     for decision in decisions:
@@ -140,7 +140,7 @@ def train_centralized_histogram_xgb(
     config: TrainingConfig,
     feature_names: Sequence[str] | None = None,
 ) -> TrainingResult:
-    """??????????????????????????"""
+    """训练自写集中式参考模型，复用联邦版全部数学和树结构。"""
     started = perf_counter()
     values, y, names = _normalize_training_input(features, labels, feature_names)
     binning_model = fit_equal_width_binning(
@@ -207,12 +207,12 @@ def train_federated_histogram_xgb(
     devices: FederatedDevices,
     config: TrainingConfig,
 ) -> TrainingResult:
-    """?? PYU ? SecureAggregator ????????????"""
+    """通过 PYU 和 SecureAggregator 训练教学型水平联邦模型。"""
     started = perf_counter()
     audit = RuntimeMessageAudit()
     names = dataset.feature_names
 
-    # ?????????????????? PYU?Charlie ????????
+    # 原始训练表仅作为调用参数发往其所有者 PYU；Charlie 只接收局部极值。
     alice_extrema = devices.alice(compute_local_extrema)(dataset.alice_train.features)
     bob_extrema = devices.bob(compute_local_extrema)(dataset.bob_train.features)
     audit.record("local_feature_extrema", "alice", "charlie", (len(names), 2))
@@ -259,7 +259,7 @@ def train_federated_histogram_xgb(
             bob_histogram = devices.bob(build_local_histogram)(
                 bob_state, node_ids, config.max_bin
             )
-            # ???? axis=0?axis=None ?????????????????????
+            # 必须显式 axis=0：axis=None 会把全部数组维度归约成标量并触发解码错误。
             global_histogram = devices.aggregator.sum(
                 [alice_histogram, bob_histogram],
                 axis=0,
@@ -344,7 +344,7 @@ def predict_federated_test_partitions(
     dataset: HorizontalDataset,
     devices: FederatedDevices,
 ) -> tuple[NDArray[np.str_], NDArray[np.float64], NDArray[np.float64]]:
-    """? Alice/Bob ?????????? sample_id ?????????"""
+    """在 Alice/Bob 本地预测测试集，再按 sample_id 合并最终评估数据。"""
     payload = model.to_dict()
     alice_probabilities = devices.alice(predict_local_model)(
         dataset.alice_test.features, dataset.feature_names, payload

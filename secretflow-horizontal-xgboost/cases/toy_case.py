@@ -1,4 +1,4 @@
-"""?? 16 ???????????????????"""
+"""运行 16 条人工样本的集中式与水平联邦对照实验。"""
 
 from __future__ import annotations
 
@@ -24,13 +24,13 @@ from horizontal_xgb.trainer import (
 
 
 def main() -> None:
-    """?????????????????????"""
+    """完成训练、复现、重载、隐私审计和指标保存。"""
     logger = create_case_logger("toy_horizontal_case", "toy_horizontal_case.log")
     dataset = build_toy_horizontal_dataset()
     config = TrainingConfig()
     save_json(config.to_dict(), "configs/toy_training_config.json")
     logger.info(
-        "???????????=%d?????=%d????=%d",
+        "数据准备完成：训练样本=%d，测试样本=%d，特征数=%d",
         dataset.combined_train().sample_count,
         dataset.combined_test().sample_count,
         len(dataset.feature_names),
@@ -43,7 +43,7 @@ def main() -> None:
         config,
         central_train.feature_names,
     )
-    logger.info("??????????=%s???=%.6f ?", central_result.training_losses, central_result.training_seconds)
+    logger.info("集中式训练完成：损失=%s，耗时=%.6f 秒", central_result.training_losses, central_result.training_seconds)
 
     devices = create_devices()
     try:
@@ -51,15 +51,15 @@ def main() -> None:
         sample_ids, test_labels, federated_probabilities = predict_federated_test_partitions(
             federated_result.model, dataset, devices
         )
-        # ??????????????????????????
+        # 第二次训练用于验证安全聚合路径在固定配置下也可复现。
         repeated_result = train_federated_histogram_xgb(dataset, devices, config)
     finally:
         shutdown_devices()
-    logger.info("?????????=%s???=%.6f ?", federated_result.training_losses, federated_result.training_seconds)
+    logger.info("联邦训练完成：损失=%s，耗时=%.6f 秒", federated_result.training_losses, federated_result.training_seconds)
 
     central_test = dataset.combined_test()
     if not np.array_equal(sample_ids, central_test.sample_ids):
-        raise RuntimeError("???? sample_id ????????")
+        raise RuntimeError("最终评估 sample_id 合并顺序不一致。")
     central_probabilities = central_result.model.predict_proba(
         central_test.features, central_test.feature_names
     )
@@ -113,7 +113,7 @@ def main() -> None:
         "privacy_audit_passed": privacy_audit["passed"],
     }
     save_json(metrics, "metrics/toy_metrics.json")
-    logger.info("??=%s", metrics)
+    logger.info("指标=%s", metrics)
     print(json.dumps(metrics, ensure_ascii=False, indent=2))
 
 
