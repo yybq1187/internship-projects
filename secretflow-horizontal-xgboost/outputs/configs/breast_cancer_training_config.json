@@ -1,0 +1,12 @@
+{
+  "base_score_raw": 0.0,
+  "gamma": 0.0,
+  "learning_rate": 0.3,
+  "max_bin": 16,
+  "max_depth": 2,
+  "min_child_weight": 1.0,
+  "num_boost_round": 5,
+  "reg_lambda": 1.0,
+  "seed": 42,
+  "split_tolerance": 1e-12
+}

@@ -1,0 +1,462 @@
+{
+  "limitations": [
+    "Charlie ???????????? min/max?",
+    "??????????????????",
+    "??????????????????????"
+  ],
+  "passed": true,
+  "runtime_message_audit": {
+    "event_count": 56,
+    "events": [
+      {
+        "message_type": "local_feature_extrema",
+        "receiver": "charlie",
+        "sender": "alice",
+        "shape": [
+          30,
+          2
+        ]
+      },
+      {
+        "message_type": "local_feature_extrema",
+        "receiver": "charlie",
+        "sender": "bob",
+        "shape": [
+          30,
+          2
+        ]
+      },
+      {
+        "message_type": "global_binning",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "global_binning",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_histogram",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          1,
+          30,
+          16,
+          3
+        ]
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_histogram",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          2,
+          30,
+          16,
+          3
+        ]
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_leaf_statistics",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          4,
+          3
+        ]
+      },
+      {
+        "message_type": "public_leaf_weights",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": [
+          4
+        ]
+      },
+      {
+        "message_type": "public_leaf_weights",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": [
+          4
+        ]
+      },
+      {
+        "message_type": "aggregated_loss_statistics",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          2
+        ]
+      },
+      {
+        "message_type": "aggregated_histogram",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          1,
+          30,
+          16,
+          3
+        ]
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_histogram",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          2,
+          30,
+          16,
+          3
+        ]
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_leaf_statistics",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          4,
+          3
+        ]
+      },
+      {
+        "message_type": "public_leaf_weights",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": [
+          4
+        ]
+      },
+      {
+        "message_type": "public_leaf_weights",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": [
+          4
+        ]
+      },
+      {
+        "message_type": "aggregated_loss_statistics",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          2
+        ]
+      },
+      {
+        "message_type": "aggregated_histogram",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          1,
+          30,
+          16,
+          3
+        ]
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_histogram",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          2,
+          30,
+          16,
+          3
+        ]
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_leaf_statistics",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          4,
+          3
+        ]
+      },
+      {
+        "message_type": "public_leaf_weights",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": [
+          4
+        ]
+      },
+      {
+        "message_type": "public_leaf_weights",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": [
+          4
+        ]
+      },
+      {
+        "message_type": "aggregated_loss_statistics",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          2
+        ]
+      },
+      {
+        "message_type": "aggregated_histogram",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          1,
+          30,
+          16,
+          3
+        ]
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_histogram",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          2,
+          30,
+          16,
+          3
+        ]
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_leaf_statistics",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          4,
+          3
+        ]
+      },
+      {
+        "message_type": "public_leaf_weights",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": [
+          4
+        ]
+      },
+      {
+        "message_type": "public_leaf_weights",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": [
+          4
+        ]
+      },
+      {
+        "message_type": "aggregated_loss_statistics",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          2
+        ]
+      },
+      {
+        "message_type": "aggregated_histogram",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          1,
+          30,
+          16,
+          3
+        ]
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_histogram",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          2,
+          30,
+          16,
+          3
+        ]
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "public_split_decisions",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "aggregated_leaf_statistics",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          4,
+          3
+        ]
+      },
+      {
+        "message_type": "public_leaf_weights",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": [
+          4
+        ]
+      },
+      {
+        "message_type": "public_leaf_weights",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": [
+          4
+        ]
+      },
+      {
+        "message_type": "aggregated_loss_statistics",
+        "receiver": "charlie",
+        "sender": "secure_aggregator",
+        "shape": [
+          2
+        ]
+      },
+      {
+        "message_type": "final_model",
+        "receiver": "alice",
+        "sender": "charlie",
+        "shape": null
+      },
+      {
+        "message_type": "final_model",
+        "receiver": "bob",
+        "sender": "charlie",
+        "shape": null
+      }
+    ],
+    "passed": true,
+    "statement": "??????????????????????????",
+    "violations": []
+  },
+  "static_audit": {
+    "checked_files": [
+      "horizontal_xgb/client.py",
+      "horizontal_xgb/server.py"
+    ],
+    "passed": true,
+    "statement": "??????????????",
+    "violations": []
+  }
+}

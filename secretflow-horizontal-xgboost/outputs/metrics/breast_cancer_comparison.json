@@ -1,0 +1,59 @@
+{
+  "dataset": "sklearn.datasets.load_breast_cancer",
+  "federated_vs_official_auc_difference": 0.0009920634920633775,
+  "federated_vs_self_written_centralized_max_abs_prediction_difference": 2.8941354535128028e-08,
+  "fixed_seed_model_reproducible": true,
+  "known_warning": "JAX/Ray ??????? os.fork() ??????????",
+  "model_reload_max_abs_prediction_difference": 0.0,
+  "models": {
+    "official_xgboost_3_2_0": {
+      "accuracy": 0.956140350877193,
+      "auc": 0.9897486772486773,
+      "logloss": 0.214462447746219,
+      "model_size_bytes": 4338,
+      "training_seconds": 0.2291866040000059
+    },
+    "self_written_centralized": {
+      "accuracy": 0.9385964912280702,
+      "auc": 0.9907407407407407,
+      "logloss": 0.2216692661003602,
+      "model_size_bytes": 24550,
+      "training_losses": [
+        0.48630862025402066,
+        0.3605036805779308,
+        0.28508924169319316,
+        0.2333453592821114,
+        0.19729462265344788
+      ],
+      "training_seconds": 0.03108660099999838
+    },
+    "self_written_federated": {
+      "accuracy": 0.9385964912280702,
+      "auc": 0.9907407407407407,
+      "logloss": 0.2216692697674158,
+      "model_size_bytes": 24555,
+      "training_losses": [
+        0.48630860716432006,
+        0.36050367250547305,
+        0.2850892370873755,
+        0.23334535032838255,
+        0.19729461669921874
+      ],
+      "training_seconds": 1.7425589549999927
+    }
+  },
+  "privacy_audit_passed": true,
+  "sample_counts": {
+    "alice_test": 57,
+    "alice_train": 227,
+    "bob_test": 57,
+    "bob_train": 228,
+    "test_total": 114,
+    "train_total": 455
+  },
+  "split": {
+    "random_state": 42,
+    "stratified": true,
+    "test_size": 0.2
+  }
+}

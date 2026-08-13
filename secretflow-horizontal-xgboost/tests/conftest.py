@@ -1,0 +1,17 @@
+"""?????????? SecretFlow session ??????"""
+
+from __future__ import annotations
+
+import pytest
+
+from horizontal_xgb.devices import create_devices, shutdown_devices
+
+
+@pytest.fixture(scope="session")
+def federated_devices():
+    """??????? Ray???????????????"""
+    devices = create_devices()
+    try:
+        yield devices
+    finally:
+        shutdown_devices()

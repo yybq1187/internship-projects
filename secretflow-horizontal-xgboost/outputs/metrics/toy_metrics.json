@@ -1,0 +1,41 @@
+{
+  "centralized": {
+    "accuracy": 1.0,
+    "auc": 1.0,
+    "logloss": 0.2285871518486681,
+    "training_losses": [
+      0.5292604490302841,
+      0.4160815172807333,
+      0.33465597168268174,
+      0.27432368381995104,
+      0.22858715184866799
+    ],
+    "training_seconds": 0.002889207999999144
+  },
+  "dataset": "deterministic_toy_16",
+  "federated": {
+    "accuracy": 1.0,
+    "auc": 1.0,
+    "logloss": 0.2285874671001628,
+    "training_losses": [
+      0.529259999593099,
+      0.4160817464192708,
+      0.33465576171875,
+      0.2743237813313802,
+      0.22858683268229166
+    ],
+    "training_seconds": 1.523340699000002
+  },
+  "federated_vs_centralized_max_abs_prediction_difference": 2.508320036398448e-07,
+  "first_tree_root_split": {
+    "feature_name": "age",
+    "gain": 3.6,
+    "split_bin": 6,
+    "threshold": 33.375
+  },
+  "fixed_seed_model_reproducible": true,
+  "model_reload_max_abs_prediction_difference": 0.0,
+  "privacy_audit_passed": true,
+  "test_samples": 4,
+  "train_samples": 12
+}
